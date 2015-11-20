@@ -22,9 +22,6 @@ defmodule Rumbl.Auth do
   def login_by_username_and_pass(conn, username, given_pass, opts) do
     repo = Keyword.fetch!(opts, :repo)
     user = repo.get_by(Rumbl.User, username: username)
-    IO.puts(user.username)
-    IO.puts(user.password_hash)
-    IO.puts(given_pass)
     cond do
       user && checkpw(given_pass, user.password_hash) ->
         {:ok, login(conn, user)}
@@ -33,5 +30,10 @@ defmodule Rumbl.Auth do
       true ->
         {:error, :not_found, conn}
     end
+  end
+
+  def logout(conn) do
+    # configure_session(conn, drop: true)
+    delete_session(conn, :user_id)
   end
 end
