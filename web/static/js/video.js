@@ -16,6 +16,35 @@ const Video = {
 
     socket.connect()
     const videoChannel = socket.channel('videos:' + videoId)
+
+    postButton.addEventListener('click', () => {
+      const payload = {
+        body: msgInput.value,
+        at: Player.getCurrentTime()
+      }
+      videoChannel
+        .push('new_annotation', payload)
+        .receive('error', error => console.log(error))
+
+      msgInput.value = ''
+    })
+
+    videoChannel.on('new_annotation', (response) => {
+      this.renderAnnotation(msgContainer, response)
+    })
+
+    videoChannel
+      .join()
+      .receive('ok', resp => console.log('joined the video channel', resp))
+      .receive('error', reason => console.log('join failed', reason))
+  },
+
+  renderAnnotation(msgContainer, {user, body, at}) {
+    const template = document.createElement('div')
+    template.innerHTML = `<b>${user.username}</b>: ${body}`
+    msgContainer.appendChild(template)
+    msgContainer.scrollTop = msgContainer.scrollHeight
   }
 }
+
 export default Video
