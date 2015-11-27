@@ -2,9 +2,7 @@ import Player from './player'
 
 const Video = {
   init(socket, element) {
-    if (!element) {
-      return
-    }
+    if (!element) { return }
 
     const msgContainer = document.getElementById('msg-container')
     const msgInput = document.getElementById('msg-input')
@@ -27,6 +25,14 @@ const Video = {
         .receive('error', error => console.log(error))
 
       msgInput.value = ''
+    })
+
+    msgContainer.addEventListener('click', event => {
+      event.preventDefault()
+      const seconds = event.target.getAttribute('data-seek')
+      if (!seconds) { return }
+
+      Player.seekTo(seconds)
     })
 
     videoChannel.on('new_annotation', (response) => {
