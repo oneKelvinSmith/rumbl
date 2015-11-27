@@ -27,7 +27,10 @@ const Player = {
   onPlayerReady() {},
 
   getCurrentTime() {
-    return Math.floor(this.player.getCurrentTime() * 1000)
+    if (this.player.getCurrentTime) {
+      return Math.floor(this.player.getCurrentTime() * 1000)
+    }
+    return 0
   },
 
   seekTo(millsec) {
@@ -35,3 +38,4 @@ const Player = {
   }
 }
 export default Player
+
