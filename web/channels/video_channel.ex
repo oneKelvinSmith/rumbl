@@ -10,7 +10,9 @@ defmodule Rumbl.VideoChannel do
       preload: [:user]
     )
     response = %{
-      annotations: Phoenix.View.render_many(annotations, Rumbl.AnnotationView, "annotation.json")
+      annotations: Phoenix.View.render_many(
+        annotations, Rumbl.AnnotationView, "annotation.json"
+      )
     }
     {:ok, response, assign(socket, :video_id, video_id)}
   end

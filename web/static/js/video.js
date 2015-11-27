@@ -62,6 +62,9 @@ const Video = {
 
   renderAtTime(annotations, seconds, msgContainer) {
     return Array.filter(annotations, ann => {
+      if (ann.at > seconds) {
+        return true
+      }
       this.renderAnnotation(msgContainer, ann)
       return false
     })
