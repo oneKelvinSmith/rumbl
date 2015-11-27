@@ -2,18 +2,27 @@ defmodule Rumbl.VideoChannel do
   use Rumbl.Web, :channel
 
   def join("videos:" <> video_id, _params, socket) do
-    :timer.send_interval(5_000, :ping)
-
     {:ok, assign(socket, :video_id, video_id)}
   end
 
   def handle_in("new_annotation", params, socket) do
-    broadcast! socket, "new_annotation", %{
-      user: %{username: "anon"},
-      body: params["body"],
-      at: params["at"]
-    }
+    user = socket.assigns.current_user
+    video_id = String.to_integer(socket.assigns.video_id)
 
-    {:reply, :ok, socket}
+    changeset = user
+    |> build(:annotations, video_id: video_id)
+    |> Rumbl.Annotation.changeset(params)
+
+    case Repo.insert(changeset) do
+      {:ok, annotation} ->
+        broadcast! socket, "new_annotation", %{
+          user: Rumbl.UserView.render("user.json", %{user: user}),
+          body: annotation.body,
+          at: annotation.at
+        }
+        {:reply, :ok, socket}
+      {:error, changeset} ->
+        {:reply, {:error, %{errors: changeset}}, socket}
+    end
   end
 end

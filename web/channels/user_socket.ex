@@ -24,7 +24,8 @@ defmodule Rumbl.UserSocket do
   def connect(%{"token" => token}, socket) do
     case Phoenix.Token.verify(socket, "user socket", token, max_age: @max_age) do
       {:ok, user_id} ->
-        {:ok, assign(socket, :user_id, Integer.to_string(user_id))}
+        user = Rumbl.Repo.get!(Rumbl.User, user_id)
+        {:ok, assign(socket, :current_user, user)}
       {:error, _reason} ->
         :error
     end
@@ -42,6 +43,7 @@ defmodule Rumbl.UserSocket do
   #
   # Returning `nil` makes this socket anonymous.
   def id(socket) do
-    "users_socket:" <> socket.assigns.user_id
+    user_id = Integer.to_string(socket.assigns.current_user.id)
+    "users_socket:" <> user_id
   end
 end
