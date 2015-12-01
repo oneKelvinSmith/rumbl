@@ -8,6 +8,7 @@ defmodule Rumbl do
 
     children = [
       supervisor(Rumbl.Endpoint, []),
+      supervisor(Rumbl.InfoSys.Supervisor, []),
       worker(Rumbl.Repo, []),
     ]
 

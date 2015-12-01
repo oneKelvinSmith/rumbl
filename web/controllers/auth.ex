@@ -4,7 +4,6 @@ defmodule Rumbl.Auth do
   import Phoenix.Controller
 
   alias Rumbl.Router.Helpers
-  import Logger
 
   def init(opts) do
     Keyword.fetch!(opts, :repo)
