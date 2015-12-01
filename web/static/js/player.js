@@ -27,8 +27,9 @@ const Player = {
   onPlayerReady() {},
 
   getCurrentTime() {
-    if (this.player.getCurrentTime) {
-      return Math.floor(this.player.getCurrentTime() * 1000)
+    const player = this.player
+    if (player && player.getCurrentTime) {
+      return Math.floor(player.getCurrentTime() * 1000)
     }
     return 0
   },
