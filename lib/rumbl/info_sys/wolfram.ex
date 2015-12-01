@@ -10,12 +10,12 @@ defmodule Rumbl.InfoSys.Wolfram do
   def fetch(query, query_ref, owner, limit) do
     query
     |> fetch_xml()
-    |> xpath(path)
+    |> xpath(selector())
     |> send_results(query_ref, owner)
   end
 
-  defp path() do
-    ~x"/queryresult/pod[contains(@title, 'Result')]/subpod/plaintext/text()"
+  defp selector() do
+    ~x"/queryresult/pod[contains(@title, 'Result') or contains(@title, 'Definitions')]/subpod/plaintext/text()"
   end
 
   defp send_results(nil, query_ref, owner) do
@@ -27,18 +27,16 @@ defmodule Rumbl.InfoSys.Wolfram do
   end
 
   defp fetch_xml(query) do
-    {:ok, {_,_, body}} = query
-    |> wolfram_url()
-    |> String.to_char_list()
-    |> :httpc.request()
+    {:ok, {_, _, body}} = :httpc.request(wolfram_url(query))
 
-    body
+    to_string(body)
   end
 
   defp wolfram_url(query) do
     "http://api.wolframalpha.com/v2/query" <>
       "?appid=#{app_id()}" <>
       "&input=#{URI.encode(query)}&format=plaintext"
+    |> String.to_char_list()
   end
 
   defp app_id(), do: Application.get_env(:rumbl, :wolfram)[:app_id]
